@@ -19,46 +19,33 @@ import matplotlib.pyplot as plt
 # QUANTIZER
 def uniform_quantizer(in_val: np.ndarray, n_bits: int, xmax: float, m: int) -> np.ndarray:
     """Uniform quantizer for given input values."""
-    # Calculate number of levels and step size
-    levels = 2**n_bits
-    delta = 2 * xmax / levels
-
-    # Convert input to numpy array if it's not already
-    in_val = np.asarray(in_val)
-
+    
+    L = 2 ** n_bits  # Number of quantization levels
+    delta = (2 * xmax) / L  # Step size of quantization levels
+    
+    lower_bound = -xmax     # Note: if m * delta / 2 was added to lower_bound, no level 0 would appear
+    higher_bound = m * delta / 2 + xmax
+    
     # Clip input to the valid range
-    in_val_clipped = np.clip(in_val, -xmax + delta / 2, xmax - delta / 2)
-
-    # Shift and scale based on quantizer type
-    if m == 0:  # Midrise quantizer
-        q_ind = np.floor((in_val_clipped + xmax) / delta).astype(int)
-    else:  # Midtread quantizer (m == 1)
-        q_ind = np.floor((in_val_clipped + xmax - delta / 2) / delta).astype(int)
-
-    # Ensure indices are within valid range
-    q_ind = np.clip(q_ind, 0, levels - 1)
-
+    in_val_clipped = np.clip(in_val, lower_bound, higher_bound)
+    
+    # Compute quantizer index
+    q_ind = np.floor((in_val_clipped + (m * delta / 2) + xmax) / delta)
+    
+    # Ensure indices stay within valid range
+    q_ind = np.clip(q_ind, 0, L - 1).astype(int)
+    
     return q_ind
-
 
 def uniform_dequantizer(q_ind: np.ndarray, n_bits: int, xmax: float, m: int) -> np.ndarray:
     """Uniform dequantizer for given quantized indices."""
-    # Calculate number of levels and step size
-    levels = 2**n_bits
-    delta = 2 * xmax / levels
-
-    # Convert indices to numpy array if they're not already
-    q_ind = np.asarray(q_ind)
-
-    # Ensure indices are within valid range
-    q_ind = np.clip(q_ind, 0, levels - 1)
-
-    # Apply dequantization based on quantizer type
-    if m == 0:  # Midrise quantizer
-        deq_val = (q_ind + 0.5) * delta - xmax
-    else:  # Midtread quantizer (m == 1)
-        deq_val = q_ind * delta - xmax + delta / 2
-
+    
+    L = 2 ** n_bits  # Number of quantization levels
+    delta = (2 * xmax) / L  # Step size of quantization levels
+    
+    # Compute dequantized value
+    deq_val = (q_ind * delta) - xmax + (m * delta / 2) + ((delta / 2) if m == 0 else (-delta / 2))
+    
     return deq_val
 # =================================================================
 
@@ -86,6 +73,8 @@ def test_deterministic_input():
     plt.ylabel("Output Value")
     plt.legend()
     plt.grid(True)
+    plt.xticks(np.arange(-6, 7, 1.5))  # Set x-axis ticks
+    plt.yticks(np.arange(-6, 7, 1.5))  # Set y-axis ticks
     plt.savefig("midrise_quantization.png")
     plt.show()
 
@@ -103,6 +92,8 @@ def test_deterministic_input():
     plt.ylabel("Output Value")
     plt.legend()
     plt.grid(True)
+    plt.xticks(np.arange(-6, 7, 1.5))  # Set x-axis ticks
+    plt.yticks(np.arange(-6, 7, 1.5))  # Set y-axis ticks
     plt.savefig("midtread_quantization.png")
     plt.show()
 
