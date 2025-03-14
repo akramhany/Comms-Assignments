@@ -44,7 +44,7 @@ def uniform_dequantizer(q_ind: np.ndarray, n_bits: int, xmax: float, m: int) -> 
     delta = (2 * xmax) / L  # Step size of quantization levels
     
     # Compute dequantized value
-    deq_val = (q_ind * delta) - xmax + (m * delta / 2) + ((delta / 2) if m == 0 else (-delta / 2))
+    deq_val = (q_ind * delta) - xmax + ((1 - m) * delta / 2)
     
     return deq_val
 # =================================================================
