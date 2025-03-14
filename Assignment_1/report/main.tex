@@ -1,4 +1,5 @@
 \documentclass{article}
+
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
 \usepackage{titling}
@@ -7,12 +8,43 @@
 \usepackage{cite}
 \usepackage{hyperref}
 \usepackage{float}
+\usepackage{listings}
+\usepackage{xcolor}
 \usepackage{geometry}
+
 \geometry{a4paper, margin=1in}
 
 
-
 \begin{document}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{pythonstyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=pythonstyle}
+
+
+
 
 % Custom title page
 \begin{titlepage}
@@ -47,8 +79,6 @@
     \vfill
     
 \end{titlepage}
-
-\setcounter{chapter}{0}
 
 \section{Introduction}
 
@@ -126,12 +156,12 @@ Figure \ref{fig:midtread_midrise} shows the original signal and its quantized ve
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{figure2.png}
-    \caption{Manual calculation of quantization processes for verification}
+    \includegraphics[width=0.8\textwidth]{figure-2.jpg}
+    \caption{Manual calculation and hand-drawing of quantization processes for verification}
     \label{fig:manual_calc}
 \end{figure}
 
-Figure \ref{fig:manual_calc} presents a manual calculation of the same quantization processes to verify the computational results.
+Figure \ref{fig:manual_calc} presents a manual calculation and hand drawing of the same quantization processes to verify the results.
 
 \subsection{SNR Analysis}
 
@@ -192,6 +222,33 @@ Our analysis confirms the theoretical expectations regarding quantization perfor
 \end{enumerate}
 
 These findings highlight the importance of selecting appropriate quantization techniques based on the specific characteristics of the input signal in digital communication systems.
+
+\appendix
+
+\section{Python Implementation}
+
+\label{appendix:code}
+
+This appendix contains the Python code used to implement the quantization techniques and generate the figures presented in this report.
+
+\subsection{Uniform Quantization Implementation}
+
+\begin{lstlisting}[language=Python, caption=Uniform Quantization Implementation]
+plt.show()
+\end{lstlisting}
+
+\subsection{SNR Analysis Implementation}
+
+\begin{lstlisting}[language=Python, caption=SNR Analysis Implementation]
+plt.show()
+\end{lstlisting}
+
+\subsection{Non-uniform Quantization Implementation}
+
+\begin{lstlisting}[language=Python, caption=Non-uniform Quantization and Companding Implementation]
+
+plt.show()
+\end{lstlisting}
 
 
 \end{document}
