@@ -108,11 +108,13 @@ def test_uniform_random_input():
     x_unif = -5 + 10 * np.random.rand(num_samples)  # Uniform between -5 and 5
     xmax = 5
     m = 0
-
+    
     # Arrays to store SNR values
     bits_range = np.arange(2, 9)
-    snr_sim = np.zeros_like(bits_range, dtype=float)
-    snr_theory = np.zeros_like(bits_range, dtype=float)
+    snr_sim_db = np.zeros_like(bits_range, dtype=float)
+    snr_theory_db = np.zeros_like(bits_range, dtype=float)
+    snr_sim_ln = np.zeros_like(bits_range, dtype=float)     # ln stands for linear
+    snr_theory_ln = np.zeros_like(bits_range, dtype=float)
 
     # Loop over different bit rates
     for i, n_bits in enumerate(bits_range):
@@ -124,24 +126,40 @@ def test_uniform_random_input():
         error = x_unif - y
         signal_power = np.mean(x_unif**2)
         noise_power = np.mean(error**2)
-        snr_sim[i] = 10 * np.log10(signal_power / noise_power)
+        snr_sim_db[i] = 10 * np.log10(signal_power / noise_power)
+        snr_sim_ln[i] = signal_power / noise_power
 
-        # Theoretical SNR for uniform distribution: 6.02*n_bits + 1.76 dB
-        snr_theory[i] = 6.02 * n_bits + 1.76
+        # Theoretical SNR for uniform distribution: 6.02*n_bits + 10log(3 * alpha) (Note: alpha is 1 / 3)
+        snr_theory_db[i] = 6.02 * n_bits
+        snr_theory_ln[i] = 2 ** (2 * n_bits)
 
     # Plot results
-    plt.figure(figsize=(10, 6))
-    plt.plot(bits_range, snr_sim, "bo-", linewidth=1.5, label="Simulated SNR")
-    plt.plot(bits_range, snr_theory, "r--", linewidth=1.5, label="Theoretical SNR")
-    plt.title("SNR vs. Number of Bits for Uniform Distribution")
+    plt.figure(figsize=(20, 6))
+
+    # Subplot for SNR in dB
+    plt.subplot(1, 2, 1)
+    plt.plot(bits_range, snr_sim_db, "bo-", linewidth=1.5, label="Simulated SNR (dB)")
+    plt.plot(bits_range, snr_theory_db, "r--", linewidth=1.5, label="Theoretical SNR (dB)")
+    plt.title("SNR vs. Number of Bits (dB) for Uniform Distribution")
     plt.xlabel("Number of Bits")
     plt.ylabel("SNR (dB)")
     plt.legend()
     plt.grid(True)
-    plt.savefig("uniform_snr.png")
+
+    # Subplot for SNR in linear scale
+    plt.subplot(1, 2, 2)
+    plt.plot(bits_range, snr_sim_ln, "bo-", linewidth=1.5, label="Simulated SNR (Linear)")
+    plt.plot(bits_range, snr_theory_ln, "r--", linewidth=1.5, label="Theoretical SNR (Linear)")
+    plt.title("SNR vs. Number of Bits (Linear) for Uniform Distribution")
+    plt.xlabel("Number of Bits")
+    plt.ylabel("SNR (Linear)")
+    plt.legend()
+    plt.grid(True)
+
+    plt.savefig("uniform_snr_comparison.png")
     plt.show()
 
-    return bits_range, snr_sim
+    return bits_range, snr_sim_db
 
 
 def test_nonuniform_random_input():
@@ -156,12 +174,13 @@ def test_nonuniform_random_input():
     x_exp = polarity * mag
 
     # Set appropriate xmax to cover most of the distribution
-    xmax = 5  # Adjust based on distribution range
+    xmax = 3  # Adjust based on distribution range
     m = 0
 
     # Arrays to store SNR values
     bits_range = np.arange(2, 9)
     snr_exp = np.zeros_like(bits_range, dtype=float)
+    snr_theory = np.zeros_like(bits_range, dtype=float)
 
     # Loop over different bit rates
     for i, n_bits in enumerate(bits_range):
@@ -174,10 +193,14 @@ def test_nonuniform_random_input():
         signal_power = np.mean(x_exp**2)
         noise_power = np.mean(error**2)
         snr_exp[i] = 10 * np.log10(signal_power / noise_power)
+     
+        snr_theory[i] = 6.02 * n_bits - 4.77
+        
 
     # Plot results
     plt.figure(figsize=(10, 6))
     plt.plot(bits_range, snr_exp, "go-", linewidth=1.5, label="Uniform Quantizer")
+    plt.plot(bits_range, snr_theory, "r--", linewidth=1.5, label="Theoretical SNR")
     plt.title("SNR vs. Number of Bits for Exponential Distribution")
     plt.xlabel("Number of Bits")
     plt.ylabel("SNR (dB)")
@@ -202,7 +225,7 @@ def test_mu_law_quantization():
     x_exp = polarity * mag
 
     # Set appropriate xmax to cover most of the distribution
-    xmax = 5  # Adjust based on distribution range
+    xmax = 3  # Adjust based on distribution range
     m = 0
 
     # μ values to test
