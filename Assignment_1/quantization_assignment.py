@@ -64,8 +64,16 @@ def test_deterministic_input():
     q_ind = uniform_quantizer(x, n_bits, xmax, m)
     y_midrise = uniform_dequantizer(q_ind, n_bits, xmax, m)
 
-    # Plot results for m = 0
-    plt.figure(figsize=(10, 6))
+    # Test for m = 1 (midtread)
+    m = 1
+    q_ind = uniform_quantizer(x, n_bits, xmax, m)
+    y_midtread = uniform_dequantizer(q_ind, n_bits, xmax, m)
+
+    # Plot results for both m = 0 and m = 1 side by side
+    plt.figure(figsize=(20, 6))
+
+    # Subplot for m = 0 (midrise)
+    plt.subplot(1, 2, 1)
     plt.plot(x, x, "b-", linewidth=1.5, label="Original Signal")
     plt.plot(x, y_midrise, "r-", linewidth=1.5, label="Quantized Signal")
     plt.title("Uniform Quantization: Midrise (m = 0)")
@@ -75,16 +83,9 @@ def test_deterministic_input():
     plt.grid(True)
     plt.xticks(np.arange(-6, 7, 1.5))  # Set x-axis ticks
     plt.yticks(np.arange(-6, 7, 1.5))  # Set y-axis ticks
-    plt.savefig("midrise_quantization.png")
-    plt.show()
 
-    # Test for m = 1 (midtread)
-    m = 1
-    q_ind = uniform_quantizer(x, n_bits, xmax, m)
-    y_midtread = uniform_dequantizer(q_ind, n_bits, xmax, m)
-
-    # Plot results for m = 1
-    plt.figure(figsize=(10, 6))
+    # Subplot for m = 1 (midtread)
+    plt.subplot(1, 2, 2)
     plt.plot(x, x, "b-", linewidth=1.5, label="Original Signal")
     plt.plot(x, y_midtread, "r-", linewidth=1.5, label="Quantized Signal")
     plt.title("Uniform Quantization: Midtread (m = 1)")
@@ -94,7 +95,8 @@ def test_deterministic_input():
     plt.grid(True)
     plt.xticks(np.arange(-6, 7, 1.5))  # Set x-axis ticks
     plt.yticks(np.arange(-6, 7, 1.5))  # Set y-axis ticks
-    plt.savefig("midtread_quantization.png")
+
+    plt.savefig("quantization_comparison.png")
     plt.show()
 
 
